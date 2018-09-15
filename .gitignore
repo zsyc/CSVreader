@@ -1,0 +1,5 @@
+# only syn the quellcode from c,c++,python
+*.*
+!*.cpp
+!.gitignore
+!*.py
