@@ -3,3 +3,4 @@
 !*.cpp
 !.gitignore
 !*.py
+!*.c
