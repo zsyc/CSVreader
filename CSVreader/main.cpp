@@ -2,8 +2,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <cassert>
-#include <cstdlib>
+#include <cstdlib>  //exit(1)
 
 using std::cin;
 using std::cout;
@@ -12,7 +11,7 @@ using std::vector;
 using std::string;
 using std::ifstream;
 
-/*  ×÷ÎªC++Á·Ï° ³¢ÊÔĞ´Ò»¸öcsv´¦Àí¹¤¾ß£¬²¢²¿·ÖÌá¹©pandas¿âÖĞ¶ÔDataframeµÄ´¦Àí·½·¨
+/*  ×÷ÎªC++Á·Ï° ³¢ÊÔĞ´Ò»¸öcsv´¦Àí¹¤¾ß£¬²¢²¿·ÖÌá¹©pandas¿âÖĞ¶ÔDataframeµÄ´¦Àí·½·¨£¬×îºÃ×öÒ»¸öGUI
     ´òËãÌá¹©·½·¨£º
     1. Ë÷Òı£¬Ò²¾ÍÊÇÄ³ĞĞÄ³ÁĞ
     2. Ìí¼Ó¡¢É¾³ıĞĞ
@@ -22,7 +21,12 @@ using std::ifstream;
     Êı¾İ½á¹¹£¬ÒòÎªCSVÎÄ¼şĞĞÁĞ²»Çå³ş£¬±ØĞëÊÇ¶¯Ì¬ÈİÆ÷£º
     1. Ê¹ÓÃvector<string>À´´¦ÀíĞĞ£¬È»ºó¶Ôstring½øĞĞ¶ººÅ¡¢·ÖºÅ·Ö¸î£¨¸Õ¸Õ·¢ÏÖ±ê×¼¿âÀïÃ»ÓĞÏÖ³É·½·¨¡­¡­£©£¬µ«ÕâÑù×öµÄ»°£¬
     ¹¦ÄÜ3¾ÍÄÑÒÔÊµÏÖ£¿²¢ÇÒ¶ÔÊı¾İ´¦ÀíÒª½øĞĞÀàĞÍ×ª»»
-    2. Ê¹ÓÃ¶şÎ¬vector<vector<double> >£¬µ«ºÃÏñ¶¨ÒåÆğÀ´±È½ÏÂé·³£¬¶ÁÈ¡Ğ§ÂÊÒ²µÍ*/
+    2. Ê¹ÓÃ¶şÎ¬vector<vector<double> >£¬µ«ºÃÏñ¶¨ÒåÆğÀ´±È½ÏÂé·³£¬¶ÁÈ¡Ğ§ÂÊÒ²µÍ
+
+    ·½°¸:
+    1. Ê¹ÓÃÊı¾İ½á¹¹1¶ÁÈ¡ĞĞ£¬ÕâÑù¿ÉÒÔ±ÜÃâÒ»Ğ©ĞĞÎ²ÌØÊâ×Ö·û´øÀ´µÄ¶àÓàbug
+    2. ·Ö¸îĞĞÊı¾İ£¬Ñ¹Èë¶şÎ¬vector*/
+
 template <typename T>
 void DisplayContents(const T& container)
 {
@@ -31,12 +35,11 @@ void DisplayContents(const T& container)
     cout<<endl;
 }
 //Ï¸ÏëÆğÀ´ÎÊÌâ·Ç³£¶à£¬ÏÈÊµÏÖCSVÎÄ¼şµÄ¶ÁÈ¡°É£¬¾ÍÊ¹ÓÃÊı¾İ½á¹¹1
-vector<string> loadCSV(string fpath,char sep=',') // ²ÎÊıÎªcsvÎÄ¼şÂ·¾¶ÒÔ¼°csvÎÄ¼ş·Ö¸ô·û£¨Ò»°ãÎª¶ººÅ»òÕß·ÖºÅ£©
+vector<string> loadCSVline(string fpath) // ²ÎÊıÎªcsvÎÄ¼şÂ·¾¶£¬·µ»ØÒÔ¡°ĞĞ¡±Îªµ¥Î»´æ´¢ÔÚvectorÖĞµÄcsvÊı¾İ
 {
     vector<string> index;
     string line;
     ifstream openCsvFile(fpath);
-//    openCsvFile.open(fpath);
     if (!openCsvFile.is_open()){
         cout<<"File path is not valid"<<endl;
         exit(1);
@@ -48,13 +51,48 @@ vector<string> loadCSV(string fpath,char sep=',') // ²ÎÊıÎªcsvÎÄ¼şÂ·¾¶ÒÔ¼°csvÎÄ¼
         }
     }
     openCsvFile.close();
-    // TODO (Clemens#1#09/21/18): ÊµÏÖ¶ººÅ¡¢·ÖºÅ·Ö¸î
     return index;
 }
-string PATH="./data/cc.txt";
+
+vector<string> lineSplit(string line, char sep=',') //°ÑÒ»ĞĞÒÔ·Ö¸ô·û·Ö¸î,È»ºó°ÑÃ¿Ò»ÏîÑ¹Èëvector
+{
+    string::size_type pos=0,j;
+    vector<string> linecell;
+    while(pos<line.size()){
+        j=line.find(sep,pos);
+        if (j!=string::npos){
+            linecell.push_back(line.substr(pos,j-pos));
+            pos=j+1;
+        }
+        else{
+            linecell.push_back(line.substr(pos,line.size()-pos));
+            pos=line.size();
+        }
+    }
+    return linecell;
+}
+
+vector<vector<string> > csvDataFrame (string path,char sep=',')
+{
+    /* ±¾º¯ÊıÍ¨¹ıµ÷ÓÃ×Óº¯ÊıÍê³ÉÁËÒ»ÏîÈÎÎñ£¬¼´°ÑÒ»¸öÎÄ±¾ÎÄµµ°´ÕÕÄ³·Ö¸ô·û×°ÈëÒ»¸ö¶şÎ¬vectorÖĞ */
+    vector<string> lineVector=loadCSVline(path);
+    vector<string>::size_type num_lines=lineVector.size();
+    vector<vector<string> > dataframe;
+    cout<<num_lines<<endl;
+    for (vector<string>::size_type i=0;i<num_lines;++i)
+    {
+        dataframe.push_back(lineSplit(lineVector.at(i),sep));
+    }
+    return dataframe;
+}
+
+//TODO ÏÂÒ»²½a. ÕûºÏµ½ÀàÖĞ£¬b. ÔÙÌá¹©Ò»Ğ©·½·¨
 int main()
 {
-//    loadCSV(PATH);
-    DisplayContents(loadCSV(PATH));
+    string PATH="./data/cc.txt";
+//    string PATH="./data/exa.csv";
+    vector<vector<string> > Data=csvDataFrame(PATH);
+    cout<<Data.at(2).at(1);
+
     return 0;
 }
