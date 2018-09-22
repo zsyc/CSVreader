@@ -1,8 +1,9 @@
-#include "csvFrame.h"
+#include "CsvFrame.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <fstream>
+#include <stdexcept>
 //#include <cstdlib>  //exit(1)
 
 using std::cout;
@@ -10,14 +11,15 @@ using std::endl;
 using std::vector;
 using std::string;
 using std::ifstream;
+using std::out_of_range;
 
-csvFrame::csvFrame(string ex_path,char ex_sep)
+CsvFrame::CsvFrame(const string &ex_path,const char ex_sep)
 {
     path=ex_path;   // csvÎÄ¼şÂ·¾¶
     sep=ex_sep;
 }
 
-vector<string> csvFrame::loadCSVline() // ·µ»ØÒÔ¡°ĞĞ¡±Îªµ¥Î»´æ´¢ÔÚvectorÖĞµÄcsvÊı¾İ
+vector<string> CsvFrame::LoadCSVline() // ·µ»ØÒÔ¡°ĞĞ¡±Îªµ¥Î»´æ´¢ÔÚvectorÖĞµÄcsvÊı¾İ
 {
     vector<string> index;
     string line;
@@ -36,7 +38,7 @@ vector<string> csvFrame::loadCSVline() // ·µ»ØÒÔ¡°ĞĞ¡±Îªµ¥Î»´æ´¢ÔÚvectorÖĞµÄcsvÊ
     return index;
 }
 
-vector<string> csvFrame::lineSplit(const string line) //°ÑÒ»ĞĞÒÔ·Ö¸ô·û·Ö¸î,È»ºó°ÑÃ¿Ò»ÏîÑ¹Èëvector
+vector<string> CsvFrame::LineSplit(const string &line) //°ÑÒ»ĞĞÒÔ·Ö¸ô·û·Ö¸î,È»ºó°ÑÃ¿Ò»ÏîÑ¹Èëvector£¬×îºóÊä³öÒ»ĞĞµÄÒ»Î¬vector
 {
     string::size_type pos=0,j;
     vector<string> linecell;
@@ -54,16 +56,75 @@ vector<string> csvFrame::lineSplit(const string line) //°ÑÒ»ĞĞÒÔ·Ö¸ô·û·Ö¸î,È»ºó°
     return linecell;
 }
 
-vector<vector<string> > csvFrame::DataFrame ()
+vector<vector<string> > CsvFrame::DataFrame ()
 {
     /* ±¾º¯ÊıÍ¨¹ıµ÷ÓÃ×Óº¯ÊıÍê³ÉÁËÒ»ÏîÈÎÎñ£¬¼´°ÑÒ»¸öÎÄ±¾ÎÄµµ°´ÕÕÄ³·Ö¸ô·û×°ÈëÒ»¸ö¶şÎ¬vectorÖĞ */
-    vector<string> lineVector=loadCSVline();
+    vector<string> lineVector=LoadCSVline();
     vector<string>::size_type num_lines=lineVector.size();
-    vector<vector<string> > dataframe;
-    cout<<num_lines<<endl;
     for (vector<string>::size_type i=0;i<num_lines;++i)
     {
-        dataframe.push_back(lineSplit(lineVector.at(i)));
+        dataframe.push_back(LineSplit(lineVector.at(i)));
     }
     return dataframe;
+}
+
+void CsvFrame::DisplayData()    //´òÓ¡ËùÓĞÄÚÈİ
+{
+    if (dataframe.empty()) cout<<"No data was imported."<<endl;
+    else{
+        for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row){
+            for (vector<string>::size_type col=0;col<dataframe.at(row).size();++col)
+                cout<<dataframe.at(row).at(col);
+            cout<<endl;
+        }
+    }
+}
+void CsvFrame::DisplayData(const int row,const int col)
+{
+    cout<<dataframe.at(row).at(col)<<endl;
+}
+
+void CsvFrame::DisplayRows(const int row)
+{
+    for (const string &cell:dataframe.at(row)) cout<<cell<<' ';
+    cout<<endl;
+}
+void CsvFrame::DisplayRows(const int firstrow,const int lastrow)
+{
+    for (auto row=firstrow;row<=lastrow;++row){
+        for (const string &cell:dataframe.at(row)) cout<<cell<<' ';
+        cout<<endl;
+    }
+}
+void CsvFrame::DisplayCols(const int col)
+{
+    try{    //Ò»Ğ©csv»á×îºóÒ»ĞĞÁô¿Õ£¬Òò´Ë²¶×½³ö½çÒì³£
+        for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(col)<<' ';
+    }
+    catch(out_of_range){
+    cout<<endl<<"out of range"<<endl;
+    }
+
+    cout<<endl;
+}
+void CsvFrame::DisplayCols(const int firstcol,const int lastcol)
+{
+    for (auto col=firstcol;col<=lastcol;++col){
+        try{    //Ò»Ğ©csv»á×îºóÒ»ĞĞÁô¿Õ£¬Òò´Ë²¶×½³ö½çÒì³£
+            for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(col)<<' ';
+        }
+        catch(out_of_range){
+            cout<<endl<<"out of range"<<endl;
+        }
+        cout<<endl;
+    }
+}
+
+void CsvFrame::Shape()  // Êä³öcsvĞĞÁĞÊı
+{
+    cout<<dataframe.size()<<" rows X "<<dataframe.at(0).size()<<" columns"<<endl;
+}
+void CsvFrame::Header() //output header/ first row
+{
+    for (string &cell:dataframe.at(0)) cout<<cell<<' ';
 }

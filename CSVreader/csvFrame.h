@@ -22,18 +22,31 @@ using std::string;
     1. 使用数据结构1读取行，这样可以避免一些行尾特殊字符带来的多余bug
     2. 分割行数据，压入二维vector*/
 
-class csvFrame
+class CsvFrame
 {
 private:
     string path;
     char sep;
 
 public:
-    csvFrame(string ex_path,char ex_sep=',');
-    vector<string> loadCSVline();
-    vector<string> lineSplit(const string);
-    vector<vector<string> > DataFrame ();
+    vector<vector<string> > dataframe;  // 运行DataFrame函数后，用于存储该对象
+
+    CsvFrame(const string &ex_path, const char ex_sep=',');
+    vector<string> LoadCSVline();   //返回以“行”为单位存储在vector中的csv数据
+    vector<string> LineSplit(const string&);    //把一行以分隔符分割,然后把每一项压入vector，最后输出一行的一维vector
+    vector<vector<string> > DataFrame ();   // 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入一个二维vector中
+    void DisplayData(); //打印所有内容
+    void DisplayData(const int,const int); //打印单元格
+    void DisplayRows(const int); //打印某行
+    void DisplayRows(const int,const int);  //打印连续几行
+    void DisplayCols(const int); //打印某列
+    void DisplayCols(const int,const int);  //打印连续几列
+
+    void Shape();   // 输出csv行列数
+    void Header();  //输出第一行
 
 };
+/* python切片功能是否可以用重载‘:’实现？
+    pandas的添加行列使用pd.Series实现的，是否考虑？*/
 
 #endif // CSVFRAME_H_INCLUDED
