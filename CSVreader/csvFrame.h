@@ -25,17 +25,21 @@ private:
 
 public:
     std::vector<std::vector<std::string> > dataframe;  // 运行DataFrame函数后，用于存储该对象
+    std::map<std::string,int> headerlabelmap;
 
     CsvFrame(const std::string &ex_path, const char ex_sep=',');
     std::vector<std::string> LoadCSVline();   //返回以“行”为单位存储在vector中的csv数据
     std::vector<std::string> LineSplit(const std::string&);    //把一行以分隔符分割,然后把每一项压入vector，最后输出一行的一维vector
     std::vector<std::vector<std::string> > DataFrame ();   // 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入一个二维vector中
+    void SetHeaderLabels();     //把header标签与列数对应起来，存储到headerlabelmap中，前提是已经有了dataframe数据
+
     void DisplayData(); //打印所有内容
     void DisplayData(const int,const int); //打印单元格
     void DisplayRows(const int); //打印某行
     void DisplayRows(const int,const int);  //打印连续几行
     void DisplayCols(const int); //打印某列
     void DisplayCols(const int,const int);  //打印连续几列
+    void DisplayColWithLabel(const std::string &);
 
     void Shape();   // 输出csv行列数
     void Header();  //输出第一行

@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <stdexcept>
+#include <map>
 #include "CsvFrame.h"
 //#include <cstdlib>  //exit(1)
 
@@ -12,6 +13,7 @@ using std::vector;
 using std::string;
 using std::ifstream;
 using std::out_of_range;
+using std::map; //存储header标签
 
 CsvFrame::CsvFrame(const string &ex_path,const char ex_sep)
 {
@@ -58,7 +60,7 @@ vector<string> CsvFrame::LineSplit(const string &line) //把一行以分隔符分割,然后
 
 vector<vector<string> > CsvFrame::DataFrame ()
 {
-    /* 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入一个二维vector中 */
+    /* 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入二维vector中(dataframe) */
     vector<string> lineVector=LoadCSVline();
     vector<string>::size_type num_lines=lineVector.size();
     for (vector<string>::size_type i=0;i<num_lines;++i)
@@ -119,6 +121,19 @@ void CsvFrame::DisplayCols(const int firstcol,const int lastcol)
         cout<<endl;
     }
 }
+void CsvFrame::DisplayColWithLabel(const string &label)
+{
+    SetHeaderLabels();
+    try{    //一些csv会最后一行留空，因此捕捉出界异常
+        for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(headerlabelmap[label])<<' ';
+    }
+    catch(out_of_range){
+    cout<<endl<<"out of range"<<endl;
+    }
+
+    cout<<endl;
+
+}
 
 void CsvFrame::Shape()  // 输出csv行列数
 {
@@ -128,6 +143,12 @@ void CsvFrame::Header() //output header/ first row
 {
     for (string &cell:dataframe.at(0)) cout<<cell<<' ';
 }
+void CsvFrame::SetHeaderLabels()    //把首行标签与列数一一对应，以实现用标签处理列的功能
+{
+    for (vector<string>::size_type i=0;i<dataframe.at(0).size();++i)
+        headerlabelmap.insert (make_pair (dataframe.at(0).at(i),i));
+}
+
 
 #define TEST_CSVFRAME   //This part is test code.
 #ifdef TEST_CSVFRAME
@@ -137,10 +158,13 @@ int main()
 //    string PATH="./data/exa.csv";   //sep=';'
     CsvFrame obj(PATH,',');
     vector<vector<string> > Data=obj.DataFrame();
-    obj.Shape();
-    obj.Header();
-    obj.DisplayRows(1,3);
-    obj.DisplayCols(1,2);
+//    obj.Shape();
+//    obj.Header();
+//    obj.DisplayRows(1,3);
+//    obj.DisplayCols(1,2);
+    obj.SetHeaderLabels();
+//    for (auto &xin:obj.headerlabelmap) cout<<xin.first<<' '<<xin.second<<endl;;
+    obj.DisplayColWithLabel("TP[0].Class[1]");
 
     return 0;
 }
