@@ -13,6 +13,7 @@ using std::vector;
 using std::string;
 using std::ifstream;
 using std::out_of_range;
+using std::invalid_argument;
 using std::map; //存储header标签
 
 CsvFrame::CsvFrame(const string &ex_path,const char ex_sep)
@@ -58,6 +59,41 @@ vector<string> CsvFrame::LineSplit(const string &line) //把一行以分隔符分割,然后
     return linecell;
 }
 
+vector<double> CsvFrame::GetColumnData(const int col)
+{
+    vector<double> column;
+    for (unsigned int row=0;row<dataframe.size();++row){
+        try{
+            column.push_back(stod(dataframe.at(row).at(col)));
+        }
+        catch (out_of_range) {
+        cout<<"out of range"<<endl;
+        }
+        catch (invalid_argument){
+        column.push_back(0.0);
+        }
+    }
+
+    return column;
+}
+vector<double> CsvFrame::GetColumnData(const string col)
+{
+    vector<double> column;
+    for (unsigned int row=0;row<dataframe.size();++row){
+        try{
+            column.push_back(stod(dataframe.at(row).at(headerlabelmap[col])));
+        }
+        catch (out_of_range) {
+        cout<<"out of range"<<endl;
+        }
+        catch (invalid_argument){
+        column.push_back(0.0);
+        }
+    }
+
+    return column;
+}
+
 vector<vector<string> > CsvFrame::DataFrame ()
 {
     /* 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入二维vector中(dataframe) */
@@ -100,7 +136,7 @@ void CsvFrame::DisplayRows(const int firstrow,const int lastrow)
 }
 void CsvFrame::DisplayCols(const int col)
 {
-    try{    //一些csv会最后一行留空，因此捕捉出界异常
+    try{    //一些csv会最后一行留空，因此捕捉出界异常 out of range
         for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(col)<<' ';
     }
     catch(out_of_range){
@@ -132,7 +168,6 @@ void CsvFrame::DisplayColWithLabel(const string &label)
     }
 
     cout<<endl;
-
 }
 
 void CsvFrame::Shape()  // 输出csv行列数
@@ -154,17 +189,22 @@ void CsvFrame::SetHeaderLabels()    //把首行标签与列数一一对应，以实现用标签处理
 #ifdef TEST_CSVFRAME
 int main()
 {
-    string PATH="./data/cc.txt";  //sep=','
-//    string PATH="./data/exa.csv";   //sep=';'
-    CsvFrame obj(PATH,',');
+//    string PATH="./data/cc.txt";  //sep=','
+    string PATH="./data/exa2.csv";   //sep=';'
+    CsvFrame obj(PATH,';');
     vector<vector<string> > Data=obj.DataFrame();
+    obj.SetHeaderLabels();
 //    obj.Shape();
 //    obj.Header();
-//    obj.DisplayRows(1,3);
+//    obj.DisplayRows(1,3); //打印第1到第3列
 //    obj.DisplayCols(1,2);
-    obj.SetHeaderLabels();
 //    for (auto &xin:obj.headerlabelmap) cout<<xin.first<<' '<<xin.second<<endl;;
-    obj.DisplayColWithLabel("TP[0].Class[1]");
+//    obj.DisplayColWithLabel("TP[0].Class[1]");
+    vector<double> a,a2;
+    a=obj.GetColumnData(1);
+    a2=obj.GetColumnData("RT-Range Processor.Hunter.AccelVehicle.AccelerationX");
+    for (auto &x:a) cout<<x<<endl;
+    for (auto &x:a2) cout<<x<<endl;
 
     return 0;
 }
