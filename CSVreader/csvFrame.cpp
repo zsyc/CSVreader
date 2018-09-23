@@ -129,7 +129,7 @@ void CsvFrame::Header() //output header/ first row
     for (string &cell:dataframe.at(0)) cout<<cell<<' ';
 }
 
-//#define TEST_CSVFRAME   //This part is test code.
+#define TEST_CSVFRAME   //This part is test code.
 #ifdef TEST_CSVFRAME
 int main()
 {
