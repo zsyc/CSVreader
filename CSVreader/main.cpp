@@ -1,13 +1,18 @@
-#include "CsvFrame.h"
 #include <iostream>
 #include <iomanip>
+#include <vector>
+#include <string>
+#include "CsvFrame.h"
+
 using std::cout;
 using std::endl;
+using std::string;
+using std::vector;
 int main()
 {
-//    string PATH="./data/cc.txt";  //sep=','
-    string PATH="./data/exa.csv";   //sep=';'
-    CsvFrame obj(PATH,';');
+    string PATH="./data/cc.txt";  //sep=','
+//    string PATH="./data/exa.csv";   //sep=';'
+    CsvFrame obj(PATH,',');
     vector<vector<string> > Data=obj.DataFrame();
     obj.Shape();
 //    obj.Header();

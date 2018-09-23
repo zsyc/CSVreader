@@ -1,12 +1,7 @@
 #ifndef CSVFRAME_H_INCLUDED
 #define CSVFRAME_H_INCLUDED
-#include <string>
-#include <vector>
 
-using std::vector;
-using std::string;
-
-/*  作为C++练习 尝试写一个csv处理工具，并部分提供pandas库中对Dataframe的处理方法，最好做一个GUI
+/*  作为C++练习 尝试模仿pandas写一个csv处理工具，并部分提供pandas库中对Dataframe的处理方法，最好做一个GUI
     打算提供方法：
     1. 索引，也就是某行某列
     2. 添加、删除行
@@ -25,16 +20,16 @@ using std::string;
 class CsvFrame
 {
 private:
-    string path;
+    std::string path;
     char sep;
 
 public:
-    vector<vector<string> > dataframe;  // 运行DataFrame函数后，用于存储该对象
+    std::vector<std::vector<std::string> > dataframe;  // 运行DataFrame函数后，用于存储该对象
 
-    CsvFrame(const string &ex_path, const char ex_sep=',');
-    vector<string> LoadCSVline();   //返回以“行”为单位存储在vector中的csv数据
-    vector<string> LineSplit(const string&);    //把一行以分隔符分割,然后把每一项压入vector，最后输出一行的一维vector
-    vector<vector<string> > DataFrame ();   // 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入一个二维vector中
+    CsvFrame(const std::string &ex_path, const char ex_sep=',');
+    std::vector<std::string> LoadCSVline();   //返回以“行”为单位存储在vector中的csv数据
+    std::vector<std::string> LineSplit(const std::string&);    //把一行以分隔符分割,然后把每一项压入vector，最后输出一行的一维vector
+    std::vector<std::vector<std::string> > DataFrame ();   // 本函数通过调用子函数完成了一项任务，即把一个文本文档按照某分隔符装入一个二维vector中
     void DisplayData(); //打印所有内容
     void DisplayData(const int,const int); //打印单元格
     void DisplayRows(const int); //打印某行
