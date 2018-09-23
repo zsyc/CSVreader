@@ -129,17 +129,19 @@ void CsvFrame::Header() //output header/ first row
     for (string &cell:dataframe.at(0)) cout<<cell<<' ';
 }
 
-
+//#define TEST_CSVFRAME   //This part is test code.
 #ifdef TEST_CSVFRAME
-void main()
+int main()
 {
-//    string PATH="./data/cc.txt";  //sep=','
-    string PATH="./data/exa.csv";   //sep=';'
-    CsvFrame obj(PATH,';');
+    string PATH="./data/cc.txt";  //sep=','
+//    string PATH="./data/exa.csv";   //sep=';'
+    CsvFrame obj(PATH,',');
     vector<vector<string> > Data=obj.DataFrame();
     obj.Shape();
     obj.Header();
     obj.DisplayRows(1,3);
     obj.DisplayCols(1,2);
+
+    return 0;
 }
 #endif // TEST_CSVFRAME
