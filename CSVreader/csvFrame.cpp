@@ -79,6 +79,7 @@ vector<double> CsvFrame::GetColumnData(const int col)
 vector<double> CsvFrame::GetColumnData(const string col)
 {
     vector<double> column;
+    SetHeaderLabels();
     for (unsigned int row=0;row<dataframe.size();++row){
         try{
             column.push_back(stod(dataframe.at(row).at(headerlabelmap[col])));
@@ -105,6 +106,13 @@ vector<vector<string> > CsvFrame::DataFrame ()
     }
     return dataframe;
 }
+void CsvFrame::SetHeaderLabels()    //把首行标签与列数一一对应，以实现用标签处理列的功能
+{
+    if (headerlabelmap.empty()){    //防止反复执行
+        for (vector<string>::size_type i=0;i<dataframe.at(0).size();++i)
+        headerlabelmap.insert (make_pair (dataframe.at(0).at(i),i));
+    }
+}
 
 void CsvFrame::DisplayData()    //打印所有内容
 {
@@ -119,20 +127,37 @@ void CsvFrame::DisplayData()    //打印所有内容
 }
 void CsvFrame::DisplayData(const int row,const int col)
 {
-    cout<<dataframe.at(row).at(col)<<endl;
+    try{
+        cout<<dataframe.at(row).at(col)<<endl;
+    }
+    catch(out_of_range){
+        cout<<"Index is out of range"<<endl;
+    }
+
 }
 
 void CsvFrame::DisplayRows(const int row)
 {
-    for (const string &cell:dataframe.at(row)) cout<<cell<<' ';
+    try{
+        for (const string &cell:dataframe.at(row)) cout<<cell<<' ';
+    }
+    catch(out_of_range){
+        cout<<"Index is out of range";
+    }
     cout<<endl;
 }
 void CsvFrame::DisplayRows(const int firstrow,const int lastrow)
 {
-    for (auto row=firstrow;row<=lastrow;++row){
-        for (const string &cell:dataframe.at(row)) cout<<cell<<' ';
+    try{
+        for (auto row=firstrow;row<=lastrow;++row){
+            for (const string &cell:dataframe.at(row)) cout<<cell<<' ';
         cout<<endl;
+        }
     }
+    catch(out_of_range){
+        cout<<"Index is out of range";
+    }
+
 }
 void CsvFrame::DisplayCols(const int col)
 {
@@ -140,7 +165,7 @@ void CsvFrame::DisplayCols(const int col)
         for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(col)<<' ';
     }
     catch(out_of_range){
-    cout<<endl<<"out of range"<<endl;
+    cout<<endl<<"Index is out of range"<<endl;
     }
 
     cout<<endl;
@@ -152,7 +177,7 @@ void CsvFrame::DisplayCols(const int firstcol,const int lastcol)
             for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(col)<<' ';
         }
         catch(out_of_range){
-            cout<<endl<<"out of range"<<endl;
+            cout<<endl<<"Index is out of range"<<endl;
         }
         cout<<endl;
     }
@@ -164,10 +189,10 @@ void CsvFrame::DisplayColWithLabel(const string &label)
         for (vector<vector<string> >::size_type row=0;row<dataframe.size();++row) cout<<dataframe.at(row).at(headerlabelmap[label])<<' ';
     }
     catch(out_of_range){
-    cout<<endl<<"out of range"<<endl;
+    cout<<endl<<"Index is out of range"<<endl;
     }
 
-    cout<<endl;
+    cout<<endl<<"Column "<<headerlabelmap[label];
 }
 
 void CsvFrame::Shape()  // 输出csv行列数
@@ -178,12 +203,21 @@ void CsvFrame::Header() //output header/ first row
 {
     for (string &cell:dataframe.at(0)) cout<<cell<<' ';
 }
-void CsvFrame::SetHeaderLabels()    //把首行标签与列数一一对应，以实现用标签处理列的功能
-{
-    for (vector<string>::size_type i=0;i<dataframe.at(0).size();++i)
-        headerlabelmap.insert (make_pair (dataframe.at(0).at(i),i));
-}
 
+double CsvFrame::Mean(const int col, bool header)
+{
+    unsigned int firstrow;
+    if (header) firstrow=1;
+    else firstrow=0;
+
+    double mean=0;
+    vector<double> column;
+    column=GetColumnData(col);
+    for (auto row=firstrow;row<column.size();++row) mean+=column.at(row);
+    mean=mean/(column.size()-firstrow);
+
+    return mean;
+}
 
 #define TEST_CSVFRAME   //This part is test code.
 #ifdef TEST_CSVFRAME
@@ -194,17 +228,20 @@ int main()
     CsvFrame obj(PATH,';');
     vector<vector<string> > Data=obj.DataFrame();
     obj.SetHeaderLabels();
+    cout<<obj.Mean(-1,1);
+//    obj.DisplayData(2,-1);
 //    obj.Shape();
 //    obj.Header();
-//    obj.DisplayRows(1,3); //打印第1到第3列
+//    obj.DisplayRows(1,90); //打印第1到第3列
 //    obj.DisplayCols(1,2);
 //    for (auto &xin:obj.headerlabelmap) cout<<xin.first<<' '<<xin.second<<endl;;
-//    obj.DisplayColWithLabel("TP[0].Class[1]");
-    vector<double> a,a2;
-    a=obj.GetColumnData(1);
-    a2=obj.GetColumnData("RT-Range Processor.Hunter.AccelVehicle.AccelerationX");
-    for (auto &x:a) cout<<x<<endl;
-    for (auto &x:a2) cout<<x<<endl;
+//    obj.DisplayColWithLabel("RT-Range Processor.Hunter.AccelVehicle.AccelerationX");    //exa2.csv
+//    vector<double> a,a2;
+//    a=obj.GetColumnData(1);
+//    a2=obj.GetColumnData("RT-Range Processor.Hunter.AccelVehicle.AccelerationX");
+//    for (auto &x:a) cout<<x<<endl;
+//    for (auto &x:a2) cout<<x<<endl;
+
 
     return 0;
 }

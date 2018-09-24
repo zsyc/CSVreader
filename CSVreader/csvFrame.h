@@ -31,18 +31,14 @@ private:
     /*******************************************/
 
     /**对数据预处理**********************************/
-    vector<string> LoadCSVline();                 //返回以“行”为单位存储在vector中的csv数据
-    vector<string> LineSplit(const string&); //把一行以分隔符分割,然后把每一项压入vector，最后输出一行的一维vector
+    vector<string> LoadCSVline();                    //返回以“行”为单位存储在vector中的csv数据
+    vector<string> LineSplit(const string&);        //把一行以分隔符分割,然后把每一项压入vector，最后输出一行的一维vector
 
-//    vector<double> GetColumnData(const int);           //把某一列的数值转换为浮点型vector便于计算,header转换为0.0
-    //vector<double> GetColumnData(const vector);
+    vector<double> GetColumnData(const int);           //把某一列的数值转换为浮点型vector便于计算,header转换为0.0
+    vector<double> GetColumnData(const string);
     /************************************************/
 
 public:
-    //测试结束后放入private
-    vector<double> GetColumnData(const int);
-    vector<double> GetColumnData(const string);
-
     /**Object init，read and save the data****************/
     CsvFrame(const string &ex_path, const char ex_sep=',');
     vector<vector<string> > DataFrame ();       //把一个文本文档按照某分隔符装入一个二维vector中
@@ -52,16 +48,19 @@ public:
 
     /**Display data************************************/
     void DisplayData();                     //打印所有内容
-    void DisplayData(const int,const int);  //打印单元格
-    void DisplayRows(const int);            //打印某行
-    void DisplayRows(const int,const int);  //打印连续几行
-    void DisplayCols(const int);            //打印某列
-    void DisplayCols(const int,const int);  //打印连续几列
+    void DisplayData(const int row,const int col);  //打印单元格
+    void DisplayRows(const int row);            //打印某行
+    void DisplayRows(const int firstrow,const int lastrow);  //打印连续几行
+    void DisplayCols(const int col);            //打印某列
+    void DisplayCols(const int firstcol,const int lastcol);  //打印连续几列
     void DisplayColWithLabel(const string &);
     void Shape();                           // 输出csv行列数
     void Header();                          //输出第一行
     /*************************************************/
 
+    /**statistic*************************************/
+    double Mean(const int col, bool header);    //If header doesn't exist, header=0
+    /*************************************************/
 
 };
 /* python切片功能是否可以用重载‘:’实现？
