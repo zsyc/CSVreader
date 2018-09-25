@@ -16,12 +16,6 @@ using std::out_of_range;
 using std::invalid_argument;
 using std::map; //存储header标签
 
-CsvFrame::CsvFrame(const string &ex_path,const char ex_sep)
-{
-    path=ex_path;   // csv文件路径
-    sep=ex_sep;
-}
-
 vector<string> CsvFrame::LoadCSVline() // 返回以“行”为单位存储在vector中的csv数据
 {
     vector<string> index;
@@ -228,7 +222,7 @@ int main()
     CsvFrame obj(PATH,';');
     vector<vector<string> > Data=obj.DataFrame();
     obj.SetHeaderLabels();
-    cout<<obj.Mean(-1,1);
+    cout<<obj.Mean(2,1);
 //    obj.DisplayData(2,-1);
 //    obj.Shape();
 //    obj.Header();

@@ -40,7 +40,7 @@ private:
 
 public:
     /**Object init，read and save the data****************/
-    CsvFrame(const string &ex_path, const char ex_sep=',');
+    CsvFrame(const string &ex_path, const char ex_sep=',') : path(ex_path), sep(ex_sep){};
     vector<vector<string> > DataFrame ();       //把一个文本文档按照某分隔符装入一个二维vector中
     void SetHeaderLabels();                     //把header标签与列数对应起来，存储到headerlabelmap中，前提是已经有了dataframe数据
 
